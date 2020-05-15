@@ -6,6 +6,7 @@ pipeline {
         string defaultValue: '7.7.0', description: 'Current beats snapshot', name: 'CURRENT_SNAPSHOT', trim: true
         string defaultValue: '7.8.0', description: 'New beats snapshot', name: 'NEW_SNAPSHOT', trim: true
         string defaultValue: '7.6.2', description: 'Latest beats release', name: 'LATEST_RELEASE', trim: true
+        booleanParam defaultValue: false, description: 'Push new beats branch?', name: 'PUSH_BRANCH'
     }
     stages {
         stage('info') {
@@ -18,11 +19,12 @@ pipeline {
                 make --version
                 python3 --version
                 sed --version
-                echo ${params.CURRENT_BRANCH}
-                echo ${params.NEW_BRANCH}
-                echo ${params.CURRENT_SNAPSHOT}
-                echo ${params.NEW_SNAPSHOT}
-                echo ${params.LATEST_RELEASE}
+                echo "CURRENT_BRANCH: ${params.CURRENT_BRANCH}"
+                echo "NEW_BRANCH: ${params.NEW_BRANCH}"
+                echo "CURRENT_SNAPSHOT: ${params.CURRENT_SNAPSHOT}"
+                echo "NEW_SNAPSHOT: ${params.NEW_SNAPSHOT}"
+                echo "LATEST_RELEASE: ${params.LATEST_RELEASE}"
+                echo "PUSH_BRANCH: ${params.PUSH_BRANCH}"
                 """
             }
             post{
@@ -42,8 +44,8 @@ pipeline {
                     cd /tmp/go/src/github.com/elastic
                     git clone https://github.com/elastic/beats.git
                     cd beats
-                    git checkout 7.x
-                    git checkout -b 7.8
+                    git checkout ${params.CURRENT_BRANCH} 
+                    git checkout -b ${params.NEW_BRANCH} 
                 """
             }
             post{
@@ -60,15 +62,15 @@ pipeline {
                 sh """
                     export PATH=/usr/local/go/bin:$PATH
                     cd /tmp/go/src/github.com/elastic/beats
-                    sed -i 's/7.6.2/7.7.0/g' testing/environments/latest.yml
-                    sed -i 's/7.7.0/7.8.0/g' testing/environments/snapshot-oss.yml
-                    sed -i 's/7.7.0/7.8.0/g' testing/environments/snapshot.yml
-                    sed -i 's/7.x/7.8/g' libbeat/docs/version.asciidoc
+                    sed -i "s/${params.LATEST_RELEASE}/${params.CURRENT_SNAPSHOT}/g" testing/environments/latest.yml
+                    sed -i "s/${params.CURRENT_SNAPSHOT}/${params.NEW_SNAPSHOT}/g" testing/environments/snapshot-oss.yml
+                    sed -i "s/${params.CURRENT_SNAPSHOT}/${params.NEW_SNAPSHOT}/g" testing/environments/snapshot.yml
+                    sed -i "s/${params.CURRENT_BRANCH}/${params.NEW_BRANCH}/g" libbeat/docs/version.asciidoc
                     export GOPATH="/tmp/go"
                     export GOCACHE="/tmp/go-cache"
                     go env
-                    ./dev-tools/set_docs_version 7.8.0
-                    ./dev-tools/set_version 7.8.0
+                    ./dev-tools/set_docs_version ${params.NEW_SNAPSHOT} 
+                    ./dev-tools/set_version ${params.NEW_SNAPSHOT} 
                     make update
                 """
             }

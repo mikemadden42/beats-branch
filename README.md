@@ -1,6 +1,6 @@
-# build_beats
+# beats-branch
 
-Containerized env to build Elastic Beats
+Containerized env to create branch in beats repo
 
 Use the following command to build this image.  Change the tag as needed.
 

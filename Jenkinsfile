@@ -73,6 +73,7 @@ pipeline {
                     ./dev-tools/set_docs_version ${params.NEW_SNAPSHOT} 
                     ./dev-tools/set_version ${params.NEW_SNAPSHOT} 
                     make update
+                    git status
                 """
             }
             post{

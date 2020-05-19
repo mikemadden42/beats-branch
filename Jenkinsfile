@@ -92,8 +92,5 @@ pipeline {
         failure{
             echo "========pipeline execution failed========"
         }
-        always{
-            junit "test-reports/junit.xml"
-        }
     }
 }

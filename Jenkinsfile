@@ -66,6 +66,7 @@ pipeline {
                     sed -i "s/${params.CURRENT_SNAPSHOT}/${params.NEW_SNAPSHOT}/g" testing/environments/snapshot-oss.yml
                     sed -i "s/${params.CURRENT_SNAPSHOT}/${params.NEW_SNAPSHOT}/g" testing/environments/snapshot.yml
                     sed -i "s/${params.CURRENT_BRANCH}/${params.NEW_BRANCH}/g" libbeat/docs/version.asciidoc
+                    export HOME="/tmp"
                     export GOPATH="/tmp/go"
                     export GOCACHE="/tmp/go-cache"
                     go env

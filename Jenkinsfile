@@ -44,8 +44,8 @@ pipeline {
                     cd /tmp/go/src/github.com/elastic
                     git clone https://github.com/elastic/beats.git
                     cd beats
-                    git checkout ${params.CURRENT_BRANCH} 
-                    git checkout -b ${params.NEW_BRANCH} 
+                    git checkout ${params.CURRENT_BRANCH}
+                    git checkout -b ${params.NEW_BRANCH}
                 """
             }
             post{
@@ -70,10 +70,11 @@ pipeline {
                     export GOPATH="/tmp/go"
                     export GOCACHE="/tmp/go-cache"
                     go env
-                    ./dev-tools/set_docs_version ${params.NEW_SNAPSHOT} 
-                    ./dev-tools/set_version ${params.NEW_SNAPSHOT} 
+                    ./dev-tools/set_docs_version ${params.NEW_SNAPSHOT}
+                    ./dev-tools/set_version ${params.NEW_SNAPSHOT}
                     make update
                     git status
+                    # TODO: push the new branch to the upstream repo
                 """
             }
             post{
